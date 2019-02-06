@@ -1,0 +1,17 @@
+{
+  "name": "0huwoh",
+  "version": "1.0.0",
+  "description": "Load html & display image",
+  "main": "index.js",
+  "scripts": {
+    "electron": "electron ."
+  },
+  "repository": {
+    "https://github.com/mikieseven/0e73-0huwoh.git"
+  },
+  "author": "MikieSeven",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^4.0.1"
+  }
+}
