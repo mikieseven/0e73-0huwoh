@@ -1,15 +1,18 @@
 // https://hackernoon.com/import-export-default-require-commandjs-javascript-nodejs-es6-vs-cheatsheet-different-tutorial-example-5a321738b50f
 // explore exports which don't seem to work in Electron - whuffo?
 // mjp 6-Feb-2019
+const { app } = require('electron')
 
-
-// require( 'elec-menuitemz.js') - require by calling file
-// Use the following to establish the menu in the calling module
-// const menu = Menu.buildFromTemplate(template)
-// Menu.setApplicationMenu(menu)
-const { app, Menu } = require('electron')
-
-const template = [
+const menuTemplate = [
+  {
+    label: 'Lick Me Mac',
+    submenu: [
+      { 
+        label: 'Gashi-Gashi Art', 
+        click () { require('electron').shell.openExternal('https://www.deviantart.com/gashi-gashi/gallery/') }
+      },
+    ]
+  },
   {
     label: 'Edit',
     submenu: [
@@ -45,19 +48,9 @@ const template = [
       { role: 'close' }
     ]
   },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click () { require('electron').shell.openExternal('https://electronjs.org') }
-      }
-    ]
-  }
 ]
-
 if (process.platform === 'darwin') {
-  template.unshift({
+  menuTemplate.unshift({
     label: app.getName(),
     submenu: [
       { role: 'about' },
@@ -73,7 +66,7 @@ if (process.platform === 'darwin') {
   })
 
   // Edit menu
-  template[1].submenu.push(
+  menuTemplate[1].submenu.push(
     { type: 'separator' },
     {
       label: 'Speech',
@@ -85,7 +78,7 @@ if (process.platform === 'darwin') {
   )
 
   // Window menu
-  template[3].submenu = [
+  menuTemplate[3].submenu = [
     { role: 'close' },
     { role: 'minimize' },
     { role: 'zoom' },
@@ -93,9 +86,18 @@ if (process.platform === 'darwin') {
     { role: 'front' }
   ]
 }
+module.exports = menuTemplate
 
-const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
+// require( 'elec-menuitemz.js') - require by calling file
+// Use the following to establish the menu in the calling module
+// const menu = Menu.buildFromTemplate(template)
+// Menu.setApplicationMenu(menu)
+//const { app, Menu } = require('electron')
+
+
+
+//const menu = Menu.buildFromTemplate(template)
+//Menu.setApplicationMenu(menu)
 
 /* const menuTemplate = [
   {

@@ -1,7 +1,7 @@
 const electron = require('electron');
 const {app, BrowserWindow, Menu } = electron;
 const menuTemplate = require('./elec-menuitemz')
-let mainWindow;
+let mainWindow, childWind = null;
 
 app.on('ready', () => {
     // https://electronjs.org/docs/api/browser-window
@@ -13,10 +13,12 @@ app.on('ready', () => {
         nodeIntegration : false,
       },
       title: 'gashi-gashi',
-      width: 1200,
-      height: 800,
-      minWidth: 500,
-      minHeight: 400,
+      modal: false,
+      useContentSize: true,
+      width: 600,
+      height: 600,
+      minWidth: 200,
+      minHeight: 200,
       minimizable: true,
       resizeable: true,
       moveable: true,
@@ -24,99 +26,51 @@ app.on('ready', () => {
       alwaysOnTop: false,
     });
 
+    childWind = new BrowserWindow(
+      {
+        webPreferences:{
+          nodeIntegration : false,
+        },
+        title: 'deviant art',
+        parent: mainWindow,
+        modal: false,
+        useContentSize: true,
+        zoomFactor: 3.0,
+        x: 0,
+        y: 0,
+        width: 600,
+        height: 600,
+        minWidth: 200,
+        minHeight: 200,
+        minimizable: true,
+        resizeable: true,
+        moveable: true,
+        closeable: true,
+        alwaysOnTop: false,
+      });
+
   // cleanup & quit after window closed
-  mainWindow.on('closed', () => { mainWindow = null; app.quit() });
+  mainWindow.on('closed', () => { mainWindow = null });
+  childWind.on('closed', () => { mainWindow = null });
+  
   mainWindow.loadURL(`file://${__dirname}/main.html`);
+  childWind.loadURL(`https://www.deviantart.com/gashi-gashi/art/2017-Summer-movie-727160570`)
 
   mainWindow.webContents.openDevTools() // dev tools 
 
-  const mainMenu = Menu.buildFromTemplate(template);
+  const mainMenu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(mainMenu);
+
+  // Quit when all windows are closed.
+  app.on('window-all-closed', function () {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+
 });
 
 // https://electronjs.org/docs/api/menu - resources for the osx sys-menu defs
 
-const template = [
-  {
-    label: 'Lick Me Mac',
-    submenu: [
-      { 
-        label: 'Gashi-Gashi Art', 
-        click () { require('electron').shell.openExternal('https://www.deviantart.com/gashi-gashi/gallery/') }
-      },
-    ]
-  },
-  {
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'pasteandmatchstyle' },
-      { role: 'delete' },
-      { role: 'selectall' }
-    ]
-  },
-  {
-    label: 'View',
-    submenu: [
-      { role: 'reload' },
-      { role: 'forcereload' },
-      { role: 'toggledevtools' },
-      { type: 'separator' },
-      { role: 'resetzoom' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' }
-    ]
-  },
-  {
-    role: 'window',
-    submenu: [
-      { role: 'minimize' },
-      { role: 'close' }
-    ]
-  },
-]
-
-if (process.platform === 'darwin') {
-  template.unshift({
-    label: app.getName(),
-    submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      { role: 'services' },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideothers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' }
-    ]
-  })
-
-  // Edit menu
-  template[1].submenu.push(
-    { type: 'separator' },
-    {
-      label: 'Speech',
-      submenu: [
-        { role: 'startspeaking' },
-        { role: 'stopspeaking' }
-      ]
-    }
-  )
-
-  // Window menu
-  template[3].submenu = [
-    { role: 'close' },
-    { role: 'minimize' },
-    { role: 'zoom' },
-    { type: 'separator' },
-    { role: 'front' }
-  ]
-}
